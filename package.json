@@ -1,0 +1,21 @@
+{
+  "name": "express-test",
+  "version": "1.0.0",
+  "description": "For me to practice express",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "keywords": [
+    "practice"
+  ],
+  "author": "Emeka",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.3",
+    "mongoose": "^5.2.9"
+  }
+}

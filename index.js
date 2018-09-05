@@ -120,7 +120,130 @@ Person.create(arrayOfpeople,function(error,data){
 
 }
 
-createManyPeople(arrayOfPeople,done);
+// createManyPeople(arrayOfPeople,done);
+
+/** # C[R]UD part II - READ #
+/*  ========================= */
+
+/** 5) Use `Model.find()` */
+
+// Find all the people having a given name, using `Model.find() -> [Person]`
+// In its simplest usage, `Model.find()` accepts a **query** document (a JSON
+// object ) as the first argument, and returns an **array** of matches.
+// It supports an extremely wide range of search options. Check it in the docs.
+// Use the function argument `personName` as search key.
+
+var personName = {'name': 'Val'};
+
+var findPeopleByName = function(personName, done) {
+  
+  Person.find(personName,function(error,data){
+    if (error) return done(error);
+    done(null,data);
+    
+  });
+  
+
+};
+
+// findPeopleByName(personName,done);
+
+/** 6) Use `Model.findOne()` */
+
+// `Model.findOne()` behaves like `.find()`, but it returns **only one**
+// document, even if there are more. It is especially useful
+// when searching by properties that you have declared as unique.
+// Find just one person which has a certain food in her favorites,
+// using `Model.findOne() -> Person`. Use the function
+// argument `food` as search key
+
+var food = {favoriteFoods: 'toasted jumbo'};
+
+var findOneByFood = function(food,done){
+    Person.findOne(food,function(error,data){
+        if (error) return done(error);
+        done(null,data);
+    });
+};
+
+// findOneByFood(food,done);
+
+
+/** 7) Use `Model.findById()` */
+
+// When saving a document, mongodb automatically add the field `_id`,
+// and set it to a unique alphanumeric key. Searching by `_id` is an
+// extremely frequent operation, so `moongose` provides a dedicated
+// method for it. Find the (only!!) person having a certain Id,
+// using `Model.findById() -> Person`.
+// Use the function argument 'personId' as search key.
+
+var personId = '5b85a31f9e389e0acfe5103c';
+
+var findPersonById = function(personId,done){
+    Person.findById(personId,function(error,data){
+        if (error) return data(error);
+        done(null,data);
+    });
+}
+
+
+// findPersonById(personId,done);
+
+
+/** # CR[U]D part III - UPDATE # 
+/*  ============================ */
+
+/** 8) Classic Update : Find, Edit then Save */
+
+// In the good old days this was what you needed to do if you wanted to edit
+// a document and be able to use it somehow e.g. sending it back in a server
+// response. Mongoose has a dedicated updating method : `Model.update()`,
+// which is directly binded to the low-level mongo driver.
+// It can bulk edit many documents matching certain criteria, but it doesn't
+// pass the edited document to its callback, only a 'status' message.
+// Furthermore it makes validation difficult, because it just
+// direcly calls the mongodb driver.
+
+// Find a person by Id ( use any of the above methods ) with the parameter
+// `personId` as search key. Add "hamburger" to the list of her `favoriteFoods`
+// (you can use Array.push()). Then - **inside the find callback** - `.save()`
+// the updated `Person`.
+
+// [*] Hint: This may be tricky if in your `Schema` you declared
+// `favoriteFoods` as an `Array` without specifying the type (i.e. `[String]`).
+// In that case `favoriteFoods` defaults to `Mixed` type, and you have to
+// manually mark it as edited using `document.markModified('edited-field')`
+// (http://mongoosejs.com/docs/schematypes.html - #Mixed )
+
+var findEditThenSave = function(personId,done){
+    /* person is the document returned after finding by ID ,it is the same as 'data' used before.
+    After fetching the document with Model.findById, we will be editing the document passed to 
+    the callback function , make changes and save those
+    changes in the same callback function passed to the 'findById'.
+    */
+
+    Person.findById(personId,function(error,person){
+        var foodToAdd = 'hamburger';
+        if (error) return done(error);
+        console.log('Previous document\n',person);
+        person.favoriteFoods.push(foodToAdd); //Made changes to this document which we got with the id
+
+        //Now we've found and edited. We will now save using the '.save()'. We're still withing the initial callback
+
+        person.save(function(error,person){
+            if (error) done(error);
+            console.log('\nEdited document\n');
+            done(null,person);
+        });
+
+    });
+
+
+};
+
+
+findEditThenSave(personId,done);
 
 
 
